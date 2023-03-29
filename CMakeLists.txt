@@ -80,6 +80,13 @@ cs_add_library(mpc_controller
 target_link_libraries(mpc_controller 
   mpc_wrapper)
 
+cs_add_executable(follow_trajectory
+  src/follow_trajectory.cpp)
+target_link_libraries(follow_trajectory
+  mpc_controller
+  mpc_wrapper
+  mpc_solver)
+
 # make an executable
 cs_install()
 cs_export()
