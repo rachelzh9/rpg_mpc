@@ -23,6 +23,7 @@
 
 
 #include <memory>
+#include <math.h>
 #include <acado_optimal_control.hpp>
 #include <acado_code_generation.hpp>
 #include <acado_gnuplot.hpp>
@@ -179,6 +180,7 @@ int main( ){
   ocp.subjectTo(-w_max_xy <= w_y <= w_max_xy);
   ocp.subjectTo(-w_max_yaw <= w_z <= w_max_yaw);
   ocp.subjectTo( T_min <= T <= T_max);
+  ocp.subjectTo(pow(0.8, 2) <= pow((p_x - 1.0), 2) + pow((p_y - 1.0), 2));
 
   ocp.setNOD(10);
 
