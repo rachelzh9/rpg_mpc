@@ -28,7 +28,7 @@ Q_velocity:   10    # Cost for velocity error
 Q_perception: 0     # Cost for reprojection error to camera optical axis (PAMPC)
 
 # Cost on Inputs
-R_thrust:     50     # Cost on thrust input
+R_thrust:     10     # Cost on thrust input
 R_pitchroll:  100     # Cost on pitch and roll rate
 R_yaw:        50     # Cost on yaw rate
 
