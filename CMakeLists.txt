@@ -23,7 +23,8 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(rpg_mpc)
 
-find_package(catkin_simple REQUIRED)
+find_package(catkin_simple REQUIRED
+message_generation)
 
 catkin_simple()
 
@@ -45,6 +46,13 @@ endif()
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -fopenmp -O3")
+
+add_message_files(
+  FILES
+  PointArray.msg
+)
+
+generate_messages(DEPENDENCIES geometry_msgs std_msgs)
 
 cs_add_library(mpc_solver
   externals/qpoases/SRC/Bounds.cpp
@@ -87,6 +95,9 @@ target_link_libraries(follow_trajectory
   mpc_wrapper
   mpc_solver)
 
+cs_add_executable(dummy_obstacle_detector
+  src/dummy_obstacle_detector.cpp)
+
 # make an executable
 cs_install()
 cs_export()
@@ -109,6 +120,10 @@ if(catkin_LIBRARIES MATCHES "autopilot")
     mpc_solver)
 
 endif(catkin_LIBRARIES MATCHES "autopilot")
+
+catkin_package(
+  CATKIN_DEPENDS message_runtime
+)
 
 cs_install()
 

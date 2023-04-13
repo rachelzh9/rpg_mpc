@@ -80,19 +80,11 @@ MpcWrapper<T>::MpcWrapper()
   Eigen::Matrix<T, 3, 1> point_of_interest(0, 0, -1000);
   // TODO: hardcoded for now, update dynamically
   Eigen::Matrix<T, 6, 1> obs;
-  obs << 1.0, 0.0, 4.0, 0.0, 7.0, 0.0;
+  obs << 100.0, 100.0, 100.0, 100.0, 100.0, 100.0;
 
   setCameraParameters(p_B_C, q_B_C);
   setPointOfInterest(point_of_interest);
   setObstacles(obs);
-
-  int count = 0;
-  for (auto i : acadoVariables.od) {
-    std::cout << count << ": " << i << ", ";
-    count++;
-  }
-  std::cout << std::endl;
-  std::cout << acado_online_data_ << std::endl;
 
   // Initialize solver.
   acado_initializeNodesByForwardSimulation();

@@ -62,7 +62,7 @@ int main( ){
 
   // Parameters with exemplary values. These are set/overwritten at runtime.
   const double t_start = 0.0;     // Initial time [s]
-  const double t_end = 2.0;       // Time horizon [s]
+  const double t_end = 3.0;       // Time horizon [s]
   const double dt = 0.1;          // Discretization time [s]
   const int N = round(t_end/dt);  // Number of nodes
   const double g_z = 9.8066;      // Gravity is everywhere [m/s^2]
@@ -210,9 +210,9 @@ int main( ){
     window1.addSubplot( p_x,"position x" );
     window1.addSubplot( p_y,"position y" );
     window1.addSubplot( p_z,"position z" );
-    window1.addSubplot( v_x,"verlocity x" );
-    window1.addSubplot( v_y,"verlocity y" );
-    window1.addSubplot( v_z,"verlocity z" );
+    window1.addSubplot( v_x,"velocity x" );
+    window1.addSubplot( v_y,"velocity y" );
+    window1.addSubplot( v_z,"velocity z" );
 
     GnuplotWindow window3( PLOT_AT_EACH_ITERATION );
     window3.addSubplot( w_x,"rotation-acc x" );

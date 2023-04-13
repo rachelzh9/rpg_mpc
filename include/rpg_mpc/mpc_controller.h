@@ -34,6 +34,7 @@
 #include <quadrotor_common/quad_state_estimate.h>
 #include <quadrotor_common/trajectory.h>
 #include <quadrotor_common/trajectory_point.h>
+#include <rpg_mpc/PointArray.h>
 #include <ros/ros.h>
 #include <std_msgs/Bool.h>
 #include <std_msgs/Empty.h>
@@ -91,6 +92,7 @@ public:
 
 private:
   // Internal helper functions.
+  void obstacleCallback(const rpg_mpc::PointArray::ConstPtr& msg);
 
   void pointOfInterestCallback(
       const geometry_msgs::PointStamped::ConstPtr& msg);
@@ -123,6 +125,7 @@ private:
   // Subscribers and publisher.
   ros::Subscriber sub_point_of_interest_;
   ros::Subscriber sub_autopilot_off_;
+  ros::Subscriber sub_obstacle_;
   ros::Publisher pub_predicted_trajectory_;
 
   // Parameters
@@ -143,6 +146,7 @@ private:
   Eigen::Matrix<T, kStateSize, kSamples + 1> predicted_states_;
   Eigen::Matrix<T, kInputSize, kSamples> predicted_inputs_;
   Eigen::Matrix<T, 3, 1> point_of_interest_;
+  Eigen::Matrix<T, 6, 1> obstacle_positions_;
 };
 
 

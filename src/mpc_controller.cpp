@@ -50,6 +50,7 @@ MpcController<T>::MpcController(
                                          &MpcController<T>::pointOfInterestCallback, this);
   sub_autopilot_off_ = nh_.subscribe("autopilot/off", 1,
                                      &MpcController<T>::offCallback, this);
+  sub_obstacle_ = nh_.subscribe("/obstacles", 1, &MpcController<T>::obstacleCallback, this);                               
 
   if (!params_.loadParameters(pnh_)) {
     ROS_ERROR("[%s] Could not load parameters.", pnh_.getNamespace().c_str());
@@ -60,6 +61,22 @@ MpcController<T>::MpcController(
 
   solve_from_scratch_ = true;
   preparation_thread_ = std::thread(&MpcWrapper<T>::prepare, mpc_wrapper_);
+}
+
+template<typename T>
+void MpcController<T>::obstacleCallback(const rpg_mpc::PointArray::ConstPtr& msg) {
+  int i = 0;
+  while (i<msg->points.size()) {
+    obstacle_positions_(2*i) = msg->points[i].x;
+    obstacle_positions_(2*i+1) = msg->points[i].y;
+    i++;
+  }
+  while (i < obstacle_positions_.rows()) {
+    obstacle_positions_(2*i) = predicted_states_(0,0) + 100;
+    obstacle_positions_(2*i+1) = predicted_states_(1,0) + 100;
+    i++;
+  }
+  mpc_wrapper_.setObstacles(obstacle_positions_);
 }
 
 template<typename T>
