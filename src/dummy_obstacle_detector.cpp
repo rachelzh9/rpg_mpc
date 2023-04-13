@@ -9,7 +9,7 @@ private:
     float detection_radius_ = 3.0;
 
     std::vector<float> xyz_{0.0, 0.0, 0.0};
-    std::vector<std::vector<float>> gt_obstacles_{{1.0, 1.0}, {5.0, 0.0}, {0.0, 3.0}, {4.0, 4.0}, {2.0, 8.0}, {9.0, 6.0}};
+    std::vector<std::vector<float>> gt_obstacles_{{2.0, 2.0}, {5.0, 0.0}, {0.0, 3.0}, {4.0, 4.0}, {2.0, 8.0}, {9.0, 6.0}};
 
     ros::NodeHandle nh;
     ros::Publisher pub;
@@ -24,9 +24,10 @@ public:
     ~DummyObstacleDetector() {};
 
     void gazeboStateCallback(const gazebo_msgs::ModelStates::ConstPtr& msg) {
-        xyz_[0] = msg->pose[1].position.x;
-        xyz_[1] = msg->pose[1].position.y;
-        xyz_[2] = msg->pose[1].position.z;
+        xyz_[0] = msg->pose.back().position.x;
+        xyz_[1] = msg->pose.back().position.y;
+        xyz_[2] = msg->pose.back().position.z;
+        detectObstacles();
     }
 
     void detectObstacles() {
@@ -42,13 +43,13 @@ public:
 
     void publishObstacles(std::vector<std::vector<float>>& obs) {
         rpg_mpc::PointArray msg;
-        ROS_INFO("PUBLISHING %d", int(obs.size()));
-        for (int i=0; i<obs.size(); i++) {
+        // ROS_INFO("PUBLISHING %d", int(obs.size()));
+        for (unsigned int i=0; i<obs.size(); i++) {
             geometry_msgs::Point p;
             p.x = obs[i][0];
             p.y = obs[i][1];
             msg.points.push_back(p);
-            ROS_INFO("(%f, %f)", obs[i][0], obs[i][1]);
+            // ROS_INFO("(%f, %f)", obs[i][0], obs[i][1]);
         }
 
         pub.publish(msg);
@@ -59,14 +60,7 @@ int main(int argc, char **argv)
 {
     ros::init(argc, argv, "obstacle_detector");
     DummyObstacleDetector dod;
-    ros::Rate loop_rate(5);
-
-    while (ros::ok())
-    {
-        dod.detectObstacles();
-        ros::spinOnce();
-        loop_rate.sleep();
-    }
+    ros::spin();
 
     return 0;
 }
