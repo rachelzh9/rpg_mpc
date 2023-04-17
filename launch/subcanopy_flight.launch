@@ -1,10 +1,11 @@
 <?xml version="1.0"?>
 <launch>
   <arg name="quad_name" default="hummingbird"/>
+  <arg name="obs_config" default="$(find maps)/config/map.yaml"/>
 
   <arg name="mav_name" default="$(arg quad_name)"/>
   <arg name="model" value="$(find rotors_description)/urdf/mav_generic_odometry_sensor.gazebo"/>
-  <arg name="world_name" default="$(find rpg_mpc)/worlds/cylinder.world"/>
+  <arg name="world_name" default="$(find maps)/worlds/cylinder_gen.world"/>
 
   <arg name="x_init" default="0"/>
   <arg name="y_init" default="0"/>
@@ -42,6 +43,8 @@
     <arg name="y_init" value="$(arg y_init)"/>
   </include>
 
-  <node pkg="rpg_mpc" type="dummy_obstacle_detector" name="dummy_obstacle_detector" output="screen"/>
+  <node pkg="rpg_mpc" type="dummy_obstacle_detector" name="dummy_obstacle_detector" output="screen">
+    <param name="obs_config" value="$(arg obs_config)"/>
+  </node>
 
 </launch>

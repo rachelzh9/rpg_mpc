@@ -97,6 +97,8 @@ target_link_libraries(follow_trajectory
 
 cs_add_executable(dummy_obstacle_detector
   src/dummy_obstacle_detector.cpp)
+target_link_libraries(dummy_obstacle_detector
+  yaml-cpp)
 
 # make an executable
 cs_install()

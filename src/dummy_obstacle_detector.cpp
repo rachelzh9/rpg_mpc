@@ -3,13 +3,14 @@
 #include <rpg_mpc/PointArray.h>
 #include <gazebo_msgs/ModelStates.h>
 #include <geometry_msgs/Pose.h>
+#include <yaml-cpp/yaml.h>
 
 class DummyObstacleDetector {
 private:
-    float detection_radius_ = 3.0;
+    float detection_radius_;
 
     std::vector<float> xyz_{0.0, 0.0, 0.0};
-    std::vector<std::vector<float>> gt_obstacles_{{2.0, 2.0}, {5.0, 0.0}, {0.0, 3.0}, {4.0, 4.0}, {2.0, 8.0}, {9.0, 6.0}};
+    std::vector<std::vector<float>> gt_obstacles_;
 
     ros::NodeHandle nh;
     ros::Publisher pub;
@@ -17,17 +18,31 @@ private:
 
 public:
 
-    DummyObstacleDetector() {
+    DummyObstacleDetector() : detection_radius_(3.0) {
         pub = nh.advertise<rpg_mpc::PointArray>("obstacles", 1);
         sub = nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1, &DummyObstacleDetector::gazeboStateCallback, this);
+        std::string config_path;
+        nh.getParam("/dummy_obstacle_detector/obs_config", config_path);
+        loadConfig(config_path);
     }
-    ~DummyObstacleDetector() {};
+    ~ DummyObstacleDetector() {};
 
     void gazeboStateCallback(const gazebo_msgs::ModelStates::ConstPtr& msg) {
         xyz_[0] = msg->pose.back().position.x;
         xyz_[1] = msg->pose.back().position.y;
         xyz_[2] = msg->pose.back().position.z;
         detectObstacles();
+    }
+
+    void loadConfig(std::string config_path) {
+        // Parse the YAML file
+        YAML::Node data = YAML::LoadFile(config_path);
+
+        int num_obs = data["num_obstacles"].as<int>();
+        ROS_INFO("%d obstacles loaded", num_obs);
+        for (int i=0; i<num_obs; i++) {
+            gt_obstacles_.push_back({data["obstacles"][i]['x'].as<float>(), data["obstacles"][i]['y'].as<float>()});
+        }
     }
 
     void detectObstacles() {
