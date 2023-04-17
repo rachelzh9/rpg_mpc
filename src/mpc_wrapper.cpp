@@ -79,8 +79,7 @@ MpcWrapper<T>::MpcWrapper()
   Eigen::Quaternion<T> q_B_C(1, 0, 0, 0);
   Eigen::Matrix<T, 3, 1> point_of_interest(0, 0, -1000);
   // TODO: hardcoded for now, update dynamically
-  Eigen::Matrix<T, 6, 1> obs;
-  obs << 100.0, 100.0, 100.0, 100.0, 100.0, 100.0;
+  Eigen::Matrix<T, 6, 1> obs = Eigen::Matrix<T, 6, 1>::Constant(1000.0);
 
   setCameraParameters(p_B_C, q_B_C);
   setPointOfInterest(point_of_interest);

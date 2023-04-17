@@ -1,4 +1,5 @@
 #include <vector>
+#include <queue>
 #include <ros/ros.h>
 #include <rpg_mpc/PointArray.h>
 #include <gazebo_msgs/ModelStates.h>
@@ -18,11 +19,12 @@ private:
 
 public:
 
-    DummyObstacleDetector() : detection_radius_(3.0) {
+    DummyObstacleDetector() {
         pub = nh.advertise<rpg_mpc::PointArray>("obstacles", 1);
         sub = nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1, &DummyObstacleDetector::gazeboStateCallback, this);
         std::string config_path;
         nh.getParam("/dummy_obstacle_detector/obs_config", config_path);
+        nh.getParam("/dummy_obstacle_detector/detection_radius", detection_radius_);
         loadConfig(config_path);
     }
     ~ DummyObstacleDetector() {};
@@ -47,11 +49,18 @@ public:
 
     void detectObstacles() {
         std::vector<std::vector<float>> obs;
+        using OD = std::pair<float, std::vector<float>>;
+        std::priority_queue<OD, std::vector<OD>, std::greater<OD>> pq;
         for (auto& o : gt_obstacles_) {
-            if (pow((o[0]-xyz_[0]),2) + pow((o[1]-xyz_[1]),2) <= pow(detection_radius_,2)) {
-                obs.push_back(o);
+            float dist = pow((o[0]-xyz_[0]),2) + pow((o[1]-xyz_[1]),2);
+            if (dist <= pow(detection_radius_,2)) {
+                pq.push(std::make_pair(dist, o));
             }
-            if (obs.size() >= 3) break;
+        }
+        while (pq.size() > 0 && obs.size() < 3) {
+            std::pair<float, std::vector<float>> p = pq.top();
+            obs.push_back(p.second);
+            pq.pop();
         }
         publishObstacles(obs);
     }
