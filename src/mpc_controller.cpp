@@ -66,7 +66,7 @@ MpcController<T>::MpcController(
 template<typename T>
 void MpcController<T>::obstacleCallback(const rpg_mpc::PointArray::ConstPtr& msg) {
   int i = 0;
-  while (i<msg->points.size()) {
+  while (i < msg->points.size()) {
     obstacle_positions_(2*i) = msg->points[i].x;
     obstacle_positions_(2*i+1) = msg->points[i].y;
     i++;
