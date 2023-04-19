@@ -97,6 +97,7 @@ target_link_libraries(follow_trajectory
 
 cs_add_executable(dummy_obstacle_detector
   src/dummy_obstacle_detector.cpp)
+add_dependencies(dummy_obstacle_detector ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(dummy_obstacle_detector
   yaml-cpp)
 
