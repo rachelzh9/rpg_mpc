@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
 <launch>
   <arg name="quad_name" default="hummingbird"/>
-  <arg name="obs_config" default="$(find maps)/config/map.yaml"/>
+  <arg name="obs_config" default="map.yaml"/>
 
   <arg name="mav_name" default="$(arg quad_name)"/>
   <arg name="model" value="$(find rotors_description)/urdf/mav_generic_odometry_sensor.gazebo"/>
-  <arg name="world_name" default="$(find maps)/worlds/cylinder_gen.world"/>
+  <arg name="world_name" default="cylinder_gen.world"/>
 
   <arg name="x_init" default="0"/>
   <arg name="y_init" default="0"/>
@@ -21,11 +21,13 @@
   <arg name="use_ground_truth" value="true"/>
   <arg name="verbose" default="false"/>
   <arg name="debug" default="false"/>
+  <arg name="custom_models" default="$(find gazebo_vegetation)/models"/>
 
   <!-- Basic simulation environment !-->
   <include file="$(find rpg_rotors_interface)/launch/basics/base_quad_simulation.launch">
+    <arg name="custom_models" value="$(arg custom_models)"/>
     <arg name="quad_name" value="$(arg quad_name)"/>
-    <arg name="world_name" value="$(arg world_name)"/>
+    <arg name="world_name" value="$(find maps)/worlds/$(arg world_name)"/>
     <arg name="paused" value="$(arg paused)"/>
     <arg name="gui" value="$(arg gui)"/>
     <arg name="use_ground_truth" value="$(arg use_ground_truth)"/>
@@ -45,7 +47,7 @@
   </include>
 
   <node pkg="rpg_mpc" type="dummy_obstacle_detector" name="dummy_obstacle_detector" output="screen">
-    <param name="obs_config" value="$(arg obs_config)"/>
+    <param name="obs_config" value="$(find maps)/config/$(arg obs_config)"/>
     <param name="detection_radius" value="$(arg detection_radius)"/>
   </node>
 
