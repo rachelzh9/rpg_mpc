@@ -26,6 +26,10 @@ CMAKE_MINIMUM_REQUIRED( VERSION 2.8 )
 # Project name and programming languages used
 PROJECT( quadrotor_model )
 
+## Compile as C++17
+add_compile_options(-std=c++17)
+set(CMAKE_CXX_STANDARD 17)
+
 # CMake module(s) path
 SET( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} )
 # activate c++ 11
