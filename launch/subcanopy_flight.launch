@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <launch>
   <arg name="quad_name" default="hummingbird"/>
-  <arg name="obs_config" default="map.yaml"/>
+  <arg name="obs_config" default="cylinder_gen.yaml"/>
 
   <arg name="mav_name" default="$(arg quad_name)"/>
   <arg name="model" value="$(find rotors_description)/urdf/mav_generic_odometry_sensor.gazebo"/>
@@ -21,11 +21,11 @@
   <arg name="use_ground_truth" value="true"/>
   <arg name="verbose" default="false"/>
   <arg name="debug" default="false"/>
-  <arg name="custom_models" default="$(find gazebo_vegetation)/models"/>
+  <!-- <arg name="custom_models" default="$(find gazebo_vegetation)/models"/> -->
 
   <!-- Basic simulation environment !-->
   <include file="$(find rpg_rotors_interface)/launch/basics/base_quad_simulation.launch">
-    <arg name="custom_models" value="$(arg custom_models)"/>
+    <!-- <arg name="custom_models" value="$(arg custom_models)"/> -->
     <arg name="quad_name" value="$(arg quad_name)"/>
     <arg name="world_name" value="$(find maps)/worlds/$(arg world_name)"/>
     <arg name="paused" value="$(arg paused)"/>
@@ -46,11 +46,19 @@
     <arg name="y_init" value="$(arg y_init)"/>
   </include>
 
+  <!-- Obstacle detector -->
   <node pkg="rpg_mpc" type="dummy_obstacle_detector" name="dummy_obstacle_detector" output="screen">
     <param name="obs_config" value="$(find maps)/config/$(arg obs_config)"/>
     <param name="detection_radius" value="$(arg detection_radius)"/>
   </node>
 
+  <!-- RRT Planner -->
+  <!-- <node pkg="rrt_planner" type="rrt_planner_server" name="rrt_planner_server" output="screen" />
+  <group ns="$(arg quad_name)" >
+    <node pkg="local_planner" type="local_planner" name="local_planner" output="screen" />
+  </group> -->
+
+  <!-- Rviz -->
   <node type="rviz" name="rviz" pkg="rviz" args="-d $(find rpg_mpc)/rviz/subcanopy_flight.rviz" />
 
 </launch>
