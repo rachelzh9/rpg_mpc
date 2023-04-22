@@ -6,14 +6,16 @@
 #include <geometry_msgs/Pose.h>
 #include <yaml-cpp/yaml.h>
 #include <visualization_msgs/Marker.h>
-
+#include <visualization_msgs/MarkerArray.h>
 
 class DummyObstacleDetector {
 private:
     float detection_radius_;
+    int last_pub_time_;  
 
     std::vector<float> xyz_{0.0, 0.0, 0.0};
     std::vector<std::vector<float>> gt_obstacles_;
+    std::vector<std::vector<float>> active_obstacles_;
 
     ros::NodeHandle nh;
     ros::Publisher pub;
@@ -25,11 +27,12 @@ public:
     DummyObstacleDetector() {
         pub = nh.advertise<rpg_mpc::PointArray>("obstacles", 1);
         sub = nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1, &DummyObstacleDetector::gazeboStateCallback, this);
-        marker_pub = nh.advertise<visualization_msgs::Marker>("obstacles/visualization_marker", 1);
+        marker_pub = nh.advertise<visualization_msgs::MarkerArray>("obstacles/visualization_marker", 1);
         std::string config_path;
         nh.getParam("/dummy_obstacle_detector/obs_config", config_path);
         nh.getParam("/dummy_obstacle_detector/detection_radius", detection_radius_);
-        loadConfig(config_path);        
+        loadConfig(config_path);  
+        last_pub_time_ = ros::Time::now().nsec;
     }
     ~ DummyObstacleDetector() {};
 
@@ -52,7 +55,7 @@ public:
     }
 
     void detectObstacles() {
-        std::vector<std::vector<float>> obs;
+        active_obstacles_.clear();
         using OD = std::pair<float, std::vector<float>>;
         std::priority_queue<OD, std::vector<OD>, std::greater<OD>> pq;
         for (auto& o : gt_obstacles_) {
@@ -61,30 +64,34 @@ public:
                 pq.push(std::make_pair(dist, o));
             }
         }
-        while (pq.size() > 0 && obs.size() < 3) {
+        while (pq.size() > 0 && active_obstacles_.size() < 3) {
             std::pair<float, std::vector<float>> p = pq.top();
-            obs.push_back(p.second);
+            active_obstacles_.push_back(p.second);
             pq.pop();
         }
-        publishObstacles(obs);
+        publishObstacles();
     }
 
-    void publishObstacles(std::vector<std::vector<float>>& obs) {
+    void publishObstacles() {
         rpg_mpc::PointArray msg;
-        // ROS_INFO("PUBLISHING %d", int(obs.size()));
-        for (unsigned int i=0; i<obs.size(); i++) {
+        // ROS_INFO("PUBLISHING %d", int(active_obstacles_.size()));
+        for (unsigned int i=0; i<active_obstacles_.size(); i++) {
             geometry_msgs::Point p;
-            p.x = obs[i][0];
-            p.y = obs[i][1];
+            p.x = active_obstacles_[i][0];
+            p.y = active_obstacles_[i][1];
             msg.points.push_back(p);
-            // ROS_INFO("(%f, %f)", obs[i][0], obs[i][1]);
+            // ROS_INFO("(%f, %f)", active_obstacles_[i][0], active_obstacles_[i][1]);
         }
         pub.publish(msg);
-        publishObstacleMarkers(obs);
+        if ((ros::Time::now().nsec - last_pub_time_) > 5e8) {
+            publishObstacleMarkers();
+            last_pub_time_ = ros::Time::now().nsec;
+        }
     }
 
-    void publishObstacleMarkers(std::vector<std::vector<float>>& active_obs) {
+    void publishObstacleMarkers() {
         // publish as marker for rviz
+        visualization_msgs::MarkerArray obs;
         int32_t shape = visualization_msgs::Marker::CYLINDER;
         for (unsigned int i=0; i<gt_obstacles_.size(); i++) {
             visualization_msgs::Marker marker;
@@ -108,9 +115,10 @@ public:
 
             // Set the color -- be sure to set alpha to something non-zero!
             float color = 0.2;
-            for (auto& o: active_obs) {
+            for (auto& o: active_obstacles_) {
                 if (i == int(o[2])) {
                     color = 0.8;
+                    break;
                 }
             }
             marker.color.r = color;
@@ -121,8 +129,9 @@ public:
             marker.lifetime = ros::Duration();
 
             // Publish the marker
-            marker_pub.publish(marker);
+            obs.markers.push_back(marker);
         }
+        marker_pub.publish(obs);
     }
 };
 

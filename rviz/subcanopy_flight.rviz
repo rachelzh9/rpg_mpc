@@ -5,6 +5,8 @@ Panels:
     Property Tree Widget:
       Expanded:
         - /Global Options1
+        - /MarkerArray1
+        - /MarkerArray1/Status1
       Splitter Ratio: 0.5
     Tree Height: 549
   - Class: rviz/Selection
@@ -111,10 +113,10 @@ Visualization Manager:
       Topic: /hummingbird/ground_truth/position
       Unreliable: false
       Value: true
-    - Class: rviz/Marker
+    - Class: rviz/MarkerArray
       Enabled: true
       Marker Topic: /obstacles/visualization_marker
-      Name: Obstacle Markers
+      Name: MarkerArray
       Namespaces:
         obstacles: true
       Queue Size: 100
@@ -147,7 +149,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 16.301998138427734
+      Distance: 20.44922637939453
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -163,9 +165,9 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 1.1603976488113403
+      Pitch: 0.9603973031044006
       Target Frame: <Fixed Frame>
-      Yaw: 1.0303981304168701
+      Yaw: 1.0903980731964111
     Saved: ~
 Window Geometry:
   Displays:
@@ -184,4 +186,4 @@ Window Geometry:
     collapsed: false
   Width: 1267
   X: 419
-  Y: 39
+  Y: 27
