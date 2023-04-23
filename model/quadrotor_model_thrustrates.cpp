@@ -59,6 +59,7 @@ int main( ){
   OnlineData            t_B_C_x, t_B_C_y, t_B_C_z;
   OnlineData            q_B_C_w, q_B_C_x, q_B_C_y, q_B_C_z;
   OnlineData            o1_x, o1_y, o2_x, o2_y, o3_x, o3_y;
+  OnlineData            o1_r, o2_r, o3_r;
 
   // Parameters with exemplary values. These are set/overwritten at runtime.
   const double t_start = 0.0;     // Initial time [s]
@@ -181,11 +182,11 @@ int main( ){
   ocp.subjectTo(-w_max_xy <= w_y <= w_max_xy);
   ocp.subjectTo(-w_max_yaw <= w_z <= w_max_yaw);
   ocp.subjectTo( T_min <= T <= T_max);
-  ocp.subjectTo(pow(0.8, 2) <= pow((p_x - o1_x), 2) + pow((p_y - o1_y), 2));
-  ocp.subjectTo(pow(0.8, 2) <= pow((p_x - o2_x), 2) + pow((p_y - o2_y), 2));
-  ocp.subjectTo(pow(0.8, 2) <= pow((p_x - o3_x), 2) + pow((p_y - o3_y), 2));
+  ocp.subjectTo(0.0 <= (pow((p_x - o1_x), 2) + pow((p_y - o1_y), 2)) - pow(o1_r, 2));
+  ocp.subjectTo(0.0 <= (pow((p_x - o2_x), 2) + pow((p_y - o2_y), 2)) - pow(o2_r, 2));
+  ocp.subjectTo(0.0 <= (pow((p_x - o3_x), 2) + pow((p_y - o3_y), 2)) - pow(o3_r, 2));
 
-  ocp.setNOD(16);
+  ocp.setNOD(19);
 
 
   if(!CODE_GEN)

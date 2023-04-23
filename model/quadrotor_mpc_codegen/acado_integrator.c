@@ -27,8 +27,8 @@ real_t rk_dim20_bPerm[ 20 ];
 
 real_t rk_ttt;
 
-/** Row vector of size: 30 */
-real_t rk_xxx[ 30 ];
+/** Row vector of size: 33 */
+real_t rk_xxx[ 33 ];
 
 /** Matrix of size: 10 x 2 (row major format) */
 real_t rk_kkk[ 20 ];
@@ -801,6 +801,9 @@ rk_xxx[26] = rk_eta[166];
 rk_xxx[27] = rk_eta[167];
 rk_xxx[28] = rk_eta[168];
 rk_xxx[29] = rk_eta[169];
+rk_xxx[30] = rk_eta[170];
+rk_xxx[31] = rk_eta[171];
+rk_xxx[32] = rk_eta[172];
 
 for (run = 0; run < 1; ++run)
 {

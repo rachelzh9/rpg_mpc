@@ -147,6 +147,7 @@ private:
   Eigen::Matrix<T, kInputSize, kSamples> predicted_inputs_;
   Eigen::Matrix<T, 3, 1> point_of_interest_;
   Eigen::Matrix<T, 6, 1> obstacle_positions_;
+  Eigen::Matrix<T, 3, 1> obstacle_radius_;
 };
 
 

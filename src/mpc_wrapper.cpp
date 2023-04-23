@@ -80,10 +80,11 @@ MpcWrapper<T>::MpcWrapper()
   Eigen::Matrix<T, 3, 1> point_of_interest(0, 0, -1000);
   // TODO: hardcoded for now, update dynamically
   Eigen::Matrix<T, 6, 1> obs = Eigen::Matrix<T, 6, 1>::Constant(1000.0);
+  Eigen::Matrix<T, 3, 1> obs_radius = Eigen::Matrix<T, 3, 1>::Zero();
 
   setCameraParameters(p_B_C, q_B_C);
   setPointOfInterest(point_of_interest);
-  setObstacles(obs);
+  setObstacles(obs, obs_radius);
 
   // Initialize solver.
   acado_initializeNodesByForwardSimulation();
@@ -211,10 +212,13 @@ bool MpcWrapper<T>::setPointOfInterest(
 
 template <typename T>
 bool MpcWrapper<T>::setObstacles(
-  const Eigen::Ref<const Eigen::Matrix<T, 6, 1>>& position)
+  const Eigen::Ref<const Eigen::Matrix<T, 6, 1>>& position,
+  const Eigen::Ref<const Eigen::Matrix<T, 3, 1>>& radius)
 {
   acado_online_data_.block(10, 0, 6, ACADO_N+1)
     = position.replicate(1, ACADO_N+1).template cast<float>();
+    acado_online_data_.block(16, 0, 3, ACADO_N+1)
+    = radius.replicate(1, ACADO_N+1).template cast<float>();
   return true;
 }
 

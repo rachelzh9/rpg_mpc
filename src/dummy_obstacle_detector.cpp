@@ -14,6 +14,7 @@ private:
     int last_pub_time_;  
 
     std::vector<float> xyz_{0.0, 0.0, 0.0};
+    // {x, y, id, radius}
     std::vector<std::vector<float>> gt_obstacles_;
     std::vector<std::vector<float>> active_obstacles_;
 
@@ -50,7 +51,7 @@ public:
         int num_obs = data["num_obstacles"].as<int>();
         ROS_INFO("%d obstacles loaded", num_obs);
         for (int i=0; i<num_obs; i++) {
-            gt_obstacles_.push_back({data["obstacles"][i]['x'].as<float>(), data["obstacles"][i]['y'].as<float>(), float(i)});
+            gt_obstacles_.push_back({data["obstacles"][i]['x'].as<float>(), data["obstacles"][i]['y'].as<float>(), float(i), data["obstacles"][i]['r'].as<float>()});
         }
     }
 
@@ -80,6 +81,7 @@ public:
             p.x = active_obstacles_[i][0];
             p.y = active_obstacles_[i][1];
             msg.points.push_back(p);
+            msg.r.push_back(active_obstacles_[i][3]);
             // ROS_INFO("(%f, %f)", active_obstacles_[i][0], active_obstacles_[i][1]);
         }
         pub.publish(msg);

@@ -69,14 +69,16 @@ void MpcController<T>::obstacleCallback(const rpg_mpc::PointArray::ConstPtr& msg
   while (i < msg->points.size() && 2*i+1 < obstacle_positions_.rows()) {
     obstacle_positions_(2*i) = msg->points[i].x;
     obstacle_positions_(2*i+1) = msg->points[i].y;
+    obstacle_radius_(i) = msg->r[i];
     i++;
   }
   while (2*i+1 < obstacle_positions_.rows()) {
     obstacle_positions_(2*i) = predicted_states_(0,0) + 1000;
     obstacle_positions_(2*i+1) = predicted_states_(1,0) + 1000;
+    obstacle_radius_(i) = 0.0;
     i++;
   }
-  mpc_wrapper_.setObstacles(obstacle_positions_);
+  mpc_wrapper_.setObstacles(obstacle_positions_, obstacle_radius_);
 }
 
 template<typename T>
