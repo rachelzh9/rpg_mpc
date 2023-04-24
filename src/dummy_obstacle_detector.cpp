@@ -111,8 +111,8 @@ public:
             marker.pose.orientation.z = 0.0;
             marker.pose.orientation.w = 1.0;
             // Set the scale of the marker -- 1x1x1 here means 1m on a side
-            marker.scale.x = 0.5;
-            marker.scale.y = 0.5;
+            marker.scale.x = gt_obstacles_[i][3]*2;
+            marker.scale.y = gt_obstacles_[i][3]*2;
             marker.scale.z = 3.0;
 
             // Set the color -- be sure to set alpha to something non-zero!
